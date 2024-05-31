@@ -11,6 +11,7 @@
 		"lint": "concurrently -n eslint,dprint \"eslint --ext ts .\" \"dprint check --list-different\""
 	},
   "name": "drizzle-orm",
+  "version": "0.30.10",
 	"devDependencies": {
 		"@arethetypeswrong/cli": "^0.15.3",
 		"@trivago/prettier-plugin-sort-imports": "^4.2.0",
