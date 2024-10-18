@@ -56,7 +56,7 @@ export const preparePostgresDB = async (
 				undefined,
 			);
 
-			const db = drizzle(rdsClient, config);
+			const db = drizzle({rdsClient, connection: config});
 			const migrateFn = async (config: string | MigrationConfig) => {
 				return migrate(db, config);
 			};

@@ -65281,7 +65281,7 @@ var init_connections = __esm({
             config,
             void 0
           );
-          const db = drizzle(rdsClient, config);
+          const db = drizzle({ rdsClient, connection: config });
           const migrateFn = async (config2) => {
             return migrate2(db, config2);
           };
