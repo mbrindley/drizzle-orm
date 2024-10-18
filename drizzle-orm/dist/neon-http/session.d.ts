@@ -5,10 +5,10 @@ import type { Logger } from "../logger.js";
 import type { PgDialect } from "../pg-core/dialect.js";
 import { PgTransaction } from "../pg-core/index.js";
 import type { SelectedFieldsOrdered } from "../pg-core/query-builders/select.types.js";
-import type { PgTransactionConfig, PreparedQueryConfig, QueryResultHKT } from "../pg-core/session.js";
+import type { PgQueryResultHKT, PgTransactionConfig, PreparedQueryConfig } from "../pg-core/session.js";
 import { PgPreparedQuery as PgPreparedQuery, PgSession } from "../pg-core/session.js";
 import type { RelationalSchemaConfig, TablesRelationalConfig } from "../relations.js";
-import { type Query } from "../sql/sql.js";
+import { type Query, type SQL } from "../sql/sql.js";
 export type NeonHttpClient = NeonQueryFunction<any, any>;
 export declare class NeonHttpPreparedQuery<T extends PreparedQueryConfig> extends PgPreparedQuery<T> {
     private client;
@@ -17,7 +17,7 @@ export declare class NeonHttpPreparedQuery<T extends PreparedQueryConfig> extend
     private _isResponseInArrayMode;
     private customResultMapper?;
     static readonly [entityKind]: string;
-    constructor(client: NeonHttpClient, query: Query, logger: Logger, fields: SelectedFieldsOrdered | undefined, _isResponseInArrayMode: boolean, customResultMapper?: ((rows: unknown[][]) => T['execute']) | undefined);
+    constructor(client: NeonHttpClient, query: Query, logger: Logger, fields: SelectedFieldsOrdered | undefined, _isResponseInArrayMode: boolean, customResultMapper?: ((rows: unknown[][]) => T["execute"]) | undefined);
     execute(placeholderValues?: Record<string, unknown> | undefined): Promise<T['execute']>;
     mapResult(result: unknown): unknown;
     all(placeholderValues?: Record<string, unknown> | undefined): Promise<T['all']>;
@@ -37,6 +37,7 @@ export declare class NeonHttpSession<TFullSchema extends Record<string, unknown>
     batch<U extends BatchItem<'pg'>, T extends Readonly<[U, ...U[]]>>(queries: T): Promise<unknown[]>;
     query(query: string, params: unknown[]): Promise<FullQueryResults<true>>;
     queryObjects(query: string, params: unknown[]): Promise<FullQueryResults<false>>;
+    count(sql: SQL): Promise<number>;
     transaction<T>(_transaction: (tx: NeonTransaction<TFullSchema, TSchema>) => Promise<T>, _config?: PgTransactionConfig): Promise<T>;
 }
 export declare class NeonTransaction<TFullSchema extends Record<string, unknown>, TSchema extends TablesRelationalConfig> extends PgTransaction<NeonHttpQueryResultHKT, TFullSchema, TSchema> {
@@ -46,6 +47,6 @@ export declare class NeonTransaction<TFullSchema extends Record<string, unknown>
 export type NeonHttpQueryResult<T> = Omit<FullQueryResults<false>, 'rows'> & {
     rows: T[];
 };
-export interface NeonHttpQueryResultHKT extends QueryResultHKT {
+export interface NeonHttpQueryResultHKT extends PgQueryResultHKT {
     type: NeonHttpQueryResult<this['row']>;
 }

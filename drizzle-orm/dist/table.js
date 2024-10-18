@@ -1,5 +1,5 @@
 import { entityKind } from "./entity.js";
-const TableName = Symbol.for("drizzle:Name");
+import { TableName } from "./table.utils.js";
 const Schema = Symbol.for("drizzle:Schema");
 const Columns = Symbol.for("drizzle:Columns");
 const ExtraConfigColumns = Symbol.for("drizzle:ExtraConfigColumns");
@@ -45,8 +45,9 @@ class Table {
   /** @internal */
   [IsAlias] = false;
   /** @internal */
-  [ExtraConfigBuilder] = void 0;
   [IsDrizzleTable] = true;
+  /** @internal */
+  [ExtraConfigBuilder] = void 0;
   constructor(name, schema, baseName) {
     this[TableName] = this[OriginalName] = name;
     this[Schema] = schema;
@@ -59,6 +60,9 @@ function isTable(table) {
 function getTableName(table) {
   return table[TableName];
 }
+function getTableUniqueName(table) {
+  return `${table[Schema] ?? "public"}.${table[TableName]}`;
+}
 export {
   BaseName,
   Columns,
@@ -68,8 +72,8 @@ export {
   OriginalName,
   Schema,
   Table,
-  TableName,
   getTableName,
+  getTableUniqueName,
   isTable
 };
 //# sourceMappingURL=table.js.map

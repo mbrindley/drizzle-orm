@@ -90,7 +90,7 @@ export function drizzle<
 	$client: Database;
 } {
 	if (params[0] === undefined || typeof params[0] === 'string') {
-		const instance = params[0] === undefined ? new Client() : new Client(params[0]);
+		const instance = params[0] === undefined ? new Client('') : new Client(params[0]);
 
 		return construct(instance, params[1]) as any;
 	}
@@ -108,12 +108,12 @@ export function drizzle<
 		if (typeof connection === 'object') {
 			const { source, ...options } = connection;
 
-			const instance = new Client(source, options);
+			const instance = new Client(source ?? '', options);
 
 			return construct(instance, drizzleConfig) as any;
 		}
 
-		const instance = new Client(connection);
+		const instance = new Client(connection ?? '', {});
 
 		return construct(instance, drizzleConfig) as any;
 	}

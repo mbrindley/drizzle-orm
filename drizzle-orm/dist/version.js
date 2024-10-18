@@ -1,8 +1,8 @@
 // package.json
-var version = "0.31.0";
+var version = "0.35.2";
 
 // src/version.ts
-var compatibilityVersion = 7;
+var compatibilityVersion = 9;
 export {
   compatibilityVersion,
   version as npmVersion

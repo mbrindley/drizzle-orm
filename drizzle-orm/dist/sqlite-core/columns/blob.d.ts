@@ -1,9 +1,7 @@
-/// <reference types="node" />
-/// <reference types="bun-types" />
 import type { ColumnBuilderBaseConfig } from "../../column-builder.js";
 import type { ColumnBaseConfig } from "../../column.js";
 import { entityKind } from "../../entity.js";
-import type { Equal } from "../../utils.js";
+import { type Equal } from "../../utils.js";
 import { SQLiteColumn, SQLiteColumnBuilder } from "./common.js";
 type BlobMode = 'buffer' | 'json' | 'bigint';
 export type SQLiteBigIntBuilderInitial<TName extends string> = SQLiteBigIntBuilder<{
@@ -13,6 +11,7 @@ export type SQLiteBigIntBuilderInitial<TName extends string> = SQLiteBigIntBuild
     data: bigint;
     driverParam: Buffer;
     enumValues: undefined;
+    generated: undefined;
 }>;
 export declare class SQLiteBigIntBuilder<T extends ColumnBuilderBaseConfig<'bigint', 'SQLiteBigInt'>> extends SQLiteColumnBuilder<T> {
     static readonly [entityKind]: string;
@@ -31,6 +30,7 @@ export type SQLiteBlobJsonBuilderInitial<TName extends string> = SQLiteBlobJsonB
     data: unknown;
     driverParam: Buffer;
     enumValues: undefined;
+    generated: undefined;
 }>;
 export declare class SQLiteBlobJsonBuilder<T extends ColumnBuilderBaseConfig<'json', 'SQLiteBlobJson'>> extends SQLiteColumnBuilder<T> {
     static readonly [entityKind]: string;
@@ -49,6 +49,7 @@ export type SQLiteBlobBufferBuilderInitial<TName extends string> = SQLiteBlobBuf
     data: Buffer;
     driverParam: Buffer;
     enumValues: undefined;
+    generated: undefined;
 }>;
 export declare class SQLiteBlobBufferBuilder<T extends ColumnBuilderBaseConfig<'buffer', 'SQLiteBlobBuffer'>> extends SQLiteColumnBuilder<T> {
     static readonly [entityKind]: string;
@@ -67,5 +68,7 @@ export interface BlobConfig<TMode extends BlobMode = BlobMode> {
  *
  * https://www.sqlite.org/json1.html
  */
+export declare function blob(): SQLiteBlobJsonBuilderInitial<''>;
+export declare function blob<TMode extends BlobMode = BlobMode>(config?: BlobConfig<TMode>): Equal<TMode, 'bigint'> extends true ? SQLiteBigIntBuilderInitial<''> : Equal<TMode, 'buffer'> extends true ? SQLiteBlobBufferBuilderInitial<''> : SQLiteBlobJsonBuilderInitial<''>;
 export declare function blob<TName extends string, TMode extends BlobMode = BlobMode>(name: TName, config?: BlobConfig<TMode>): Equal<TMode, 'bigint'> extends true ? SQLiteBigIntBuilderInitial<TName> : Equal<TMode, 'buffer'> extends true ? SQLiteBlobBufferBuilderInitial<TName> : SQLiteBlobJsonBuilderInitial<TName>;
 export {};

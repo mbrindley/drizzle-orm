@@ -22,11 +22,13 @@ __export(driver_exports, {
   drizzle: () => drizzle
 });
 module.exports = __toCommonJS(driver_exports);
+var import_client = require("@libsql/client");
 var import_entity = require("../entity.cjs");
 var import_logger = require("../logger.cjs");
 var import_relations = require("../relations.cjs");
 var import_db = require("../sqlite-core/db.cjs");
 var import_dialect = require("../sqlite-core/dialect.cjs");
+var import_utils = require("../utils.cjs");
 var import_session = require("./session.cjs");
 class LibSQLDatabase extends import_db.BaseSQLiteDatabase {
   static [import_entity.entityKind] = "LibSQLDatabase";
@@ -34,8 +36,8 @@ class LibSQLDatabase extends import_db.BaseSQLiteDatabase {
     return this.session.batch(batch);
   }
 }
-function drizzle(client, config = {}) {
-  const dialect = new import_dialect.SQLiteAsyncDialect();
+function construct(client, config = {}) {
+  const dialect = new import_dialect.SQLiteAsyncDialect({ casing: config.casing });
   let logger;
   if (config.logger === true) {
     logger = new import_logger.DefaultLogger();
@@ -55,8 +57,32 @@ function drizzle(client, config = {}) {
     };
   }
   const session = new import_session.LibSQLSession(client, dialect, schema, { logger }, void 0);
-  return new LibSQLDatabase("async", dialect, session, schema);
+  const db = new LibSQLDatabase("async", dialect, session, schema);
+  db.$client = client;
+  return db;
 }
+function drizzle(...params) {
+  if (typeof params[0] === "string") {
+    const instance = (0, import_client.createClient)({
+      url: params[0]
+    });
+    return construct(instance, params[1]);
+  }
+  if ((0, import_utils.isConfig)(params[0])) {
+    const { connection, client, ...drizzleConfig } = params[0];
+    if (client)
+      return construct(client, drizzleConfig);
+    const instance = typeof connection === "string" ? (0, import_client.createClient)({ url: connection }) : (0, import_client.createClient)(connection);
+    return construct(instance, drizzleConfig);
+  }
+  return construct(params[0], params[1]);
+}
+((drizzle2) => {
+  function mock(config) {
+    return construct({}, config);
+  }
+  drizzle2.mock = mock;
+})(drizzle || (drizzle = {}));
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   LibSQLDatabase,

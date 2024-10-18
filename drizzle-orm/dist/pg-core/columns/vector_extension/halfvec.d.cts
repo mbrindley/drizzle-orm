@@ -9,6 +9,7 @@ export type PgHalfVectorBuilderInitial<TName extends string> = PgHalfVectorBuild
     data: number[];
     driverParam: string;
     enumValues: undefined;
+    generated: undefined;
 }>;
 export declare class PgHalfVectorBuilder<T extends ColumnBuilderBaseConfig<'array', 'PgHalfVector'>> extends PgColumnBuilder<T, {
     dimensions: number | undefined;
@@ -28,4 +29,5 @@ export declare class PgHalfVector<T extends ColumnBaseConfig<'array', 'PgHalfVec
 export interface PgHalfVectorConfig {
     dimensions: number;
 }
+export declare function halfvec(config: PgHalfVectorConfig): PgHalfVectorBuilderInitial<''>;
 export declare function halfvec<TName extends string>(name: TName, config: PgHalfVectorConfig): PgHalfVectorBuilderInitial<TName>;

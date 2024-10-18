@@ -3,22 +3,25 @@ import { entityKind } from "../../entity.cjs";
 import type { SelectResultFields } from "../../query-builders/select.types.cjs";
 import { QueryPromise } from "../../query-promise.cjs";
 import type { RunnableQuery } from "../../runnable-query.cjs";
-import type { Query, SQL, SQLWrapper } from "../../sql/sql.cjs";
+import type { Placeholder, Query, SQL, SQLWrapper } from "../../sql/sql.cjs";
 import type { SQLiteDialect } from "../dialect.cjs";
 import type { SQLitePreparedQuery, SQLiteSession } from "../session.cjs";
 import { SQLiteTable } from "../table.cjs";
 import type { Subquery } from "../../subquery.cjs";
-import { type DrizzleTypeError, type UpdateSet } from "../../utils.cjs";
+import { type DrizzleTypeError, type UpdateSet, type ValueOrArray } from "../../utils.cjs";
+import type { SQLiteColumn } from "../columns/common.cjs";
 import type { SelectedFields, SelectedFieldsOrdered } from "./select.types.cjs";
 export interface SQLiteUpdateConfig {
     where?: SQL | undefined;
+    limit?: number | Placeholder;
+    orderBy?: (SQLiteColumn | SQL | SQL.Aliased)[];
     set: UpdateSet;
     table: SQLiteTable;
     returning?: SelectedFieldsOrdered;
     withList?: Subquery[];
 }
 export type SQLiteUpdateSetSource<TTable extends SQLiteTable> = {
-    [Key in keyof TTable['_']['columns']]?: GetColumnData<TTable['_']['columns'][Key], 'query'> | SQL;
+    [Key in keyof TTable['$inferInsert']]?: GetColumnData<TTable['_']['columns'][Key], 'query'> | SQL;
 } & {};
 export declare class SQLiteUpdateBuilder<TTable extends SQLiteTable, TResultType extends 'sync' | 'async', TRunResult> {
     protected table: TTable;
@@ -29,7 +32,7 @@ export declare class SQLiteUpdateBuilder<TTable extends SQLiteTable, TResultType
     readonly _: {
         readonly table: TTable;
     };
-    constructor(table: TTable, session: SQLiteSession<any, any, any, any>, dialect: SQLiteDialect, withList?: Subquery<string, Record<string, unknown>>[] | undefined);
+    constructor(table: TTable, session: SQLiteSession<any, any, any, any>, dialect: SQLiteDialect, withList?: Subquery[] | undefined);
     set(values: SQLiteUpdateSetSource<TTable>): SQLiteUpdateBase<TTable, TResultType, TRunResult>;
 }
 export type SQLiteUpdateWithout<T extends AnySQLiteUpdate, TDynamic extends boolean, K extends keyof T & string> = TDynamic extends true ? T : Omit<SQLiteUpdateBase<T['_']['table'], T['_']['resultType'], T['_']['runResult'], T['_']['returning'], TDynamic, T['_']['excludedMethods'] | K>, T['_']['excludedMethods'] | K>;
@@ -46,7 +49,7 @@ export type SQLiteUpdatePrepare<T extends AnySQLiteUpdate> = SQLitePreparedQuery
 }>;
 export type SQLiteUpdateDynamic<T extends AnySQLiteUpdate> = SQLiteUpdate<T['_']['table'], T['_']['resultType'], T['_']['runResult'], T['_']['returning']>;
 export type SQLiteUpdate<TTable extends SQLiteTable = SQLiteTable, TResultType extends 'sync' | 'async' = 'sync' | 'async', TRunResult = any, TReturning extends Record<string, unknown> | undefined = Record<string, unknown> | undefined> = SQLiteUpdateBase<TTable, TResultType, TRunResult, TReturning, true, never>;
-type AnySQLiteUpdate = SQLiteUpdateBase<any, any, any, any, any, any>;
+export type AnySQLiteUpdate = SQLiteUpdateBase<any, any, any, any, any, any>;
 export interface SQLiteUpdateBase<TTable extends SQLiteTable = SQLiteTable, TResultType extends 'sync' | 'async' = 'sync' | 'async', TRunResult = unknown, TReturning = undefined, TDynamic extends boolean = false, TExcludedMethods extends string = never> extends SQLWrapper, QueryPromise<TReturning extends undefined ? TRunResult : TReturning[]> {
     readonly _: {
         readonly dialect: 'sqlite';
@@ -98,6 +101,9 @@ export declare class SQLiteUpdateBase<TTable extends SQLiteTable = SQLiteTable, 
      * ```
      */
     where(where: SQL | undefined): SQLiteUpdateWithout<this, TDynamic, 'where'>;
+    orderBy(builder: (updateTable: TTable) => ValueOrArray<SQLiteColumn | SQL | SQL.Aliased>): SQLiteUpdateWithout<this, TDynamic, 'orderBy'>;
+    orderBy(...columns: (SQLiteColumn | SQL | SQL.Aliased)[]): SQLiteUpdateWithout<this, TDynamic, 'orderBy'>;
+    limit(limit: number | Placeholder): SQLiteUpdateWithout<this, TDynamic, 'limit'>;
     /**
      * Adds a `returning` clause to the query.
      *
@@ -131,4 +137,3 @@ export declare class SQLiteUpdateBase<TTable extends SQLiteTable = SQLiteTable, 
     execute(): Promise<SQLiteUpdateExecute<this>>;
     $dynamic(): SQLiteUpdateDynamic<this>;
 }
-export {};

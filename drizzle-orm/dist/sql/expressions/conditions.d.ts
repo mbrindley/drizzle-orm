@@ -134,7 +134,7 @@ export declare const gte: BinaryOperator;
  *   .where(lt(cars.year, 2000))
  * ```
  *
- * @see lte for greater-than-or-equal
+ * @see lte for less-than-or-equal
  */
 export declare const lt: BinaryOperator;
 /**
@@ -156,11 +156,6 @@ export declare const lte: BinaryOperator;
  * Test whether the first parameter, a column or expression,
  * has a value from a list passed as the second argument.
  *
- * ## Throws
- *
- * The argument passed in the second array can't be empty:
- * if an empty is provided, this method will throw.
- *
  * ## Examples
  *
  * ```ts
@@ -178,11 +173,6 @@ export declare function inArray<T extends SQLWrapper>(column: Exclude<T, SQL.Ali
  * Test whether the first parameter, a column or expression,
  * has a value that is not present in a list passed as the
  * second argument.
- *
- * ## Throws
- *
- * The argument passed in the second array can't be empty:
- * if an empty is provided, this method will throw.
  *
  * ## Examples
  *

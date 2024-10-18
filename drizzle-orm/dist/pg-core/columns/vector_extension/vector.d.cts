@@ -9,6 +9,7 @@ export type PgVectorBuilderInitial<TName extends string> = PgVectorBuilder<{
     data: number[];
     driverParam: string;
     enumValues: undefined;
+    generated: undefined;
 }>;
 export declare class PgVectorBuilder<T extends ColumnBuilderBaseConfig<'array', 'PgVector'>> extends PgColumnBuilder<T, {
     dimensions: number | undefined;
@@ -28,4 +29,5 @@ export declare class PgVector<T extends ColumnBaseConfig<'array', 'PgVector'>> e
 export interface PgVectorConfig {
     dimensions: number;
 }
+export declare function vector(config: PgVectorConfig): PgVectorBuilderInitial<''>;
 export declare function vector<TName extends string>(name: TName, config: PgVectorConfig): PgVectorBuilderInitial<TName>;

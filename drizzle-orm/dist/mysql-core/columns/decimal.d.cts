@@ -9,6 +9,7 @@ export type MySqlDecimalBuilderInitial<TName extends string> = MySqlDecimalBuild
     data: string;
     driverParam: string;
     enumValues: undefined;
+    generated: undefined;
 }>;
 export declare class MySqlDecimalBuilder<T extends ColumnBuilderBaseConfig<'string', 'MySqlDecimal'>> extends MySqlColumnBuilderWithAutoIncrement<T, MySqlDecimalConfig> {
     static readonly [entityKind]: string;
@@ -24,4 +25,6 @@ export interface MySqlDecimalConfig {
     precision?: number;
     scale?: number;
 }
+export declare function decimal(): MySqlDecimalBuilderInitial<''>;
+export declare function decimal(config: MySqlDecimalConfig): MySqlDecimalBuilderInitial<''>;
 export declare function decimal<TName extends string>(name: TName, config?: MySqlDecimalConfig): MySqlDecimalBuilderInitial<TName>;

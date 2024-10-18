@@ -23,16 +23,17 @@ export interface PgTransactionConfig {
     accessMode?: 'read only' | 'read write';
     deferrable?: boolean;
 }
-export declare abstract class PgSession<TQueryResult extends QueryResultHKT = QueryResultHKT, TFullSchema extends Record<string, unknown> = Record<string, never>, TSchema extends TablesRelationalConfig = Record<string, never>> {
+export declare abstract class PgSession<TQueryResult extends PgQueryResultHKT = PgQueryResultHKT, TFullSchema extends Record<string, unknown> = Record<string, never>, TSchema extends TablesRelationalConfig = Record<string, never>> {
     protected dialect: PgDialect;
     static readonly [entityKind]: string;
     constructor(dialect: PgDialect);
     abstract prepareQuery<T extends PreparedQueryConfig = PreparedQueryConfig>(query: Query, fields: SelectedFieldsOrdered | undefined, name: string | undefined, isResponseInArrayMode: boolean, customResultMapper?: (rows: unknown[][], mapColumnValue?: (value: unknown) => unknown) => T['execute']): PgPreparedQuery<T>;
     execute<T>(query: SQL): Promise<T>;
     all<T = unknown>(query: SQL): Promise<T[]>;
+    count(sql: SQL): Promise<number>;
     abstract transaction<T>(transaction: (tx: PgTransaction<TQueryResult, TFullSchema, TSchema>) => Promise<T>, config?: PgTransactionConfig): Promise<T>;
 }
-export declare abstract class PgTransaction<TQueryResult extends QueryResultHKT, TFullSchema extends Record<string, unknown> = Record<string, never>, TSchema extends TablesRelationalConfig = Record<string, never>> extends PgDatabase<TQueryResult, TFullSchema, TSchema> {
+export declare abstract class PgTransaction<TQueryResult extends PgQueryResultHKT, TFullSchema extends Record<string, unknown> = Record<string, never>, TSchema extends TablesRelationalConfig = Record<string, never>> extends PgDatabase<TQueryResult, TFullSchema, TSchema> {
     protected schema: {
         fullSchema: Record<string, unknown>;
         schema: TSchema;
@@ -49,11 +50,11 @@ export declare abstract class PgTransaction<TQueryResult extends QueryResultHKT,
     setTransaction(config: PgTransactionConfig): Promise<void>;
     abstract transaction<T>(transaction: (tx: PgTransaction<TQueryResult, TFullSchema, TSchema>) => Promise<T>): Promise<T>;
 }
-export interface QueryResultHKT {
-    readonly $brand: 'QueryRowHKT';
+export interface PgQueryResultHKT {
+    readonly $brand: 'PgQueryResultHKT';
     readonly row: unknown;
     readonly type: unknown;
 }
-export type QueryResultKind<TKind extends QueryResultHKT, TRow> = (TKind & {
+export type PgQueryResultKind<TKind extends PgQueryResultHKT, TRow> = (TKind & {
     readonly row: TRow;
 })['type'];

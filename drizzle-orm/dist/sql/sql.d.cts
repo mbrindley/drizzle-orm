@@ -1,3 +1,4 @@
+import type { CasingCache } from "../casing.cjs";
 import { entityKind } from "../entity.cjs";
 import type { SelectedFields } from "../operations.cjs";
 import { Subquery } from "../subquery.cjs";
@@ -14,6 +15,7 @@ export declare class FakePrimitiveParam {
 }
 export type Chunk = string | Table | View | AnyColumn | Name | Param | Placeholder | SQL;
 export interface BuildQueryConfig {
+    casing: CasingCache;
     escapeName(name: string): string;
     escapeParam(num: number, value: unknown): string;
     escapeString(str: string): string;
@@ -45,6 +47,7 @@ export interface QueryWithTypings extends Query {
  */
 export interface SQLWrapper {
     getSQL(): SQL;
+    shouldOmitSQLParens?(): boolean;
 }
 export declare function isSQLWrapper(value: unknown): value is SQLWrapper;
 export declare class StringChunk implements SQLWrapper {

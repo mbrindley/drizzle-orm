@@ -1,5 +1,5 @@
-var version = "0.31.0";
+var version = "0.35.2";
 
-declare const compatibilityVersion = 7;
+declare const compatibilityVersion = 9;
 
 export { compatibilityVersion, version as npmVersion };

@@ -2,7 +2,7 @@ import { entityKind, is } from "../../entity.js";
 import { QueryPromise } from "../../query-promise.js";
 import { Param, SQL, sql } from "../../sql/sql.js";
 import { Table } from "../../table.js";
-import { mapUpdateSet } from "../../utils.js";
+import { mapUpdateSet, orderSelectedFields } from "../../utils.js";
 class MySqlInsertBuilder {
   constructor(table, session, dialect) {
     this.table = table;
@@ -72,18 +72,32 @@ class MySqlInsertBase extends QueryPromise {
     this.config.onConflict = sql`update ${setSql}`;
     return this;
   }
+  $returningId() {
+    const returning = [];
+    for (const [key, value] of Object.entries(this.config.table[Table.Symbol.Columns])) {
+      if (value.primary) {
+        returning.push({ field: value, path: [key] });
+      }
+    }
+    this.config.returning = orderSelectedFields(this.config.table[Table.Symbol.Columns]);
+    return this;
+  }
   /** @internal */
   getSQL() {
-    return this.dialect.buildInsertQuery(this.config);
+    return this.dialect.buildInsertQuery(this.config).sql;
   }
   toSQL() {
     const { typings: _typings, ...rest } = this.dialect.sqlToQuery(this.getSQL());
     return rest;
   }
   prepare() {
+    const { sql: sql2, generatedIds } = this.dialect.buildInsertQuery(this.config);
     return this.session.prepareQuery(
-      this.dialect.sqlToQuery(this.getSQL()),
-      void 0
+      this.dialect.sqlToQuery(sql2),
+      void 0,
+      void 0,
+      generatedIds,
+      this.config.returning
     );
   }
   execute = (placeholderValues) => {

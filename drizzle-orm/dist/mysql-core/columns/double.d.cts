@@ -9,6 +9,7 @@ export type MySqlDoubleBuilderInitial<TName extends string> = MySqlDoubleBuilder
     data: number;
     driverParam: number | string;
     enumValues: undefined;
+    generated: undefined;
 }>;
 export declare class MySqlDoubleBuilder<T extends ColumnBuilderBaseConfig<'number', 'MySqlDouble'>> extends MySqlColumnBuilderWithAutoIncrement<T, MySqlDoubleConfig> {
     static readonly [entityKind]: string;
@@ -24,4 +25,6 @@ export interface MySqlDoubleConfig {
     precision?: number;
     scale?: number;
 }
+export declare function double(): MySqlDoubleBuilderInitial<''>;
+export declare function double(config?: MySqlDoubleConfig): MySqlDoubleBuilderInitial<''>;
 export declare function double<TName extends string>(name: TName, config?: MySqlDoubleConfig): MySqlDoubleBuilderInitial<TName>;

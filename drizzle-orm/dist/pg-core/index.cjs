@@ -25,6 +25,7 @@ __reExport(pg_core_exports, require("./indexes.cjs"), module.exports);
 __reExport(pg_core_exports, require("./primary-keys.cjs"), module.exports);
 __reExport(pg_core_exports, require("./query-builders/index.cjs"), module.exports);
 __reExport(pg_core_exports, require("./schema.cjs"), module.exports);
+__reExport(pg_core_exports, require("./sequence.cjs"), module.exports);
 __reExport(pg_core_exports, require("./session.cjs"), module.exports);
 __reExport(pg_core_exports, require("./subquery.cjs"), module.exports);
 __reExport(pg_core_exports, require("./table.cjs"), module.exports);
@@ -45,6 +46,7 @@ __reExport(pg_core_exports, require("./view.cjs"), module.exports);
   ...require("./primary-keys.cjs"),
   ...require("./query-builders/index.cjs"),
   ...require("./schema.cjs"),
+  ...require("./sequence.cjs"),
   ...require("./session.cjs"),
   ...require("./subquery.cjs"),
   ...require("./table.cjs"),

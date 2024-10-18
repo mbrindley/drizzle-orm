@@ -8,6 +8,7 @@ export * from "./indexes.js";
 export * from "./primary-keys.js";
 export * from "./query-builders/index.js";
 export * from "./schema.js";
+export * from "./sequence.js";
 export * from "./session.js";
 export * from "./subquery.js";
 export * from "./table.js";

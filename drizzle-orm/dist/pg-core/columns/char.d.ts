@@ -1,7 +1,7 @@
 import type { ColumnBuilderBaseConfig } from "../../column-builder.js";
 import type { ColumnBaseConfig } from "../../column.js";
 import { entityKind } from "../../entity.js";
-import type { Writable } from "../../utils.js";
+import { type Writable } from "../../utils.js";
 import { PgColumn, PgColumnBuilder } from "./common.js";
 export type PgCharBuilderInitial<TName extends string, TEnum extends [string, ...string[]]> = PgCharBuilder<{
     name: TName;
@@ -10,13 +10,14 @@ export type PgCharBuilderInitial<TName extends string, TEnum extends [string, ..
     data: TEnum[number];
     enumValues: TEnum;
     driverParam: string;
+    generated: undefined;
 }>;
 export declare class PgCharBuilder<T extends ColumnBuilderBaseConfig<'string', 'PgChar'>> extends PgColumnBuilder<T, {
     length: number | undefined;
     enumValues: T['enumValues'];
 }> {
     static readonly [entityKind]: string;
-    constructor(name: string, config: PgCharConfig<T['enumValues']>);
+    constructor(name: T['name'], config: PgCharConfig<T['enumValues']>);
 }
 export declare class PgChar<T extends ColumnBaseConfig<'string', 'PgChar'>> extends PgColumn<T, {
     length: number | undefined;
@@ -27,8 +28,10 @@ export declare class PgChar<T extends ColumnBaseConfig<'string', 'PgChar'>> exte
     readonly enumValues: T["enumValues"];
     getSQLType(): string;
 }
-export interface PgCharConfig<TEnum extends readonly string[] | string[] | undefined> {
+export interface PgCharConfig<TEnum extends readonly string[] | string[] | undefined = readonly string[] | string[] | undefined> {
     length?: number;
     enum?: TEnum;
 }
+export declare function char(): PgCharBuilderInitial<'', [string, ...string[]]>;
+export declare function char<U extends string, T extends Readonly<[U, ...U[]]>>(config?: PgCharConfig<T | Writable<T>>): PgCharBuilderInitial<'', Writable<T>>;
 export declare function char<TName extends string, U extends string, T extends Readonly<[U, ...U[]]>>(name: TName, config?: PgCharConfig<T | Writable<T>>): PgCharBuilderInitial<TName, Writable<T>>;

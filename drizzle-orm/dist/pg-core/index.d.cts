@@ -8,6 +8,7 @@ export * from "./indexes.cjs";
 export * from "./primary-keys.cjs";
 export * from "./query-builders/index.cjs";
 export * from "./schema.cjs";
+export * from "./sequence.cjs";
 export * from "./session.cjs";
 export * from "./subquery.cjs";
 export * from "./table.cjs";

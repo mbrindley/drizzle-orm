@@ -9,6 +9,7 @@ export type MySqlFloatBuilderInitial<TName extends string> = MySqlFloatBuilder<{
     data: number;
     driverParam: number | string;
     enumValues: undefined;
+    generated: undefined;
 }>;
 export declare class MySqlFloatBuilder<T extends ColumnBuilderBaseConfig<'number', 'MySqlFloat'>> extends MySqlColumnBuilderWithAutoIncrement<T> {
     static readonly [entityKind]: string;
@@ -18,4 +19,5 @@ export declare class MySqlFloat<T extends ColumnBaseConfig<'number', 'MySqlFloat
     static readonly [entityKind]: string;
     getSQLType(): string;
 }
+export declare function float(): MySqlFloatBuilderInitial<''>;
 export declare function float<TName extends string>(name: TName): MySqlFloatBuilderInitial<TName>;

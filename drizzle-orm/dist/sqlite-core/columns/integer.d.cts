@@ -1,8 +1,8 @@
-import type { ColumnBuilderBaseConfig, ColumnDataType, HasDefault, MakeColumnConfig, NotNull } from "../../column-builder.cjs";
+import type { ColumnBuilderBaseConfig, ColumnDataType, HasDefault, IsPrimaryKey, MakeColumnConfig, NotNull } from "../../column-builder.cjs";
 import type { ColumnBaseConfig } from "../../column.cjs";
 import { entityKind } from "../../entity.cjs";
 import type { OnConflict } from "../utils.cjs";
-import type { Equal, Or } from "../../utils.cjs";
+import { type Equal, type Or } from "../../utils.cjs";
 import type { AnySQLiteTable } from "../table.cjs";
 import { SQLiteColumn, SQLiteColumnBuilder } from "./common.cjs";
 export interface PrimaryKeyConfig {
@@ -16,7 +16,7 @@ export declare abstract class SQLiteBaseIntegerBuilder<T extends ColumnBuilderBa
 }> {
     static readonly [entityKind]: string;
     constructor(name: T['name'], dataType: T['dataType'], columnType: T['columnType']);
-    primaryKey(config?: PrimaryKeyConfig): HasDefault<NotNull<this>>;
+    primaryKey(config?: PrimaryKeyConfig): IsPrimaryKey<HasDefault<NotNull<this>>>;
 }
 export declare abstract class SQLiteBaseInteger<T extends ColumnBaseConfig<ColumnDataType, string>, TRuntimeConfig extends object = object> extends SQLiteColumn<T, TRuntimeConfig & {
     autoIncrement: boolean;
@@ -32,6 +32,7 @@ export type SQLiteIntegerBuilderInitial<TName extends string> = SQLiteIntegerBui
     data: number;
     driverParam: number;
     enumValues: undefined;
+    generated: undefined;
 }>;
 export declare class SQLiteIntegerBuilder<T extends ColumnBuilderBaseConfig<'number', 'SQLiteInteger'>> extends SQLiteBaseIntegerBuilder<T> {
     static readonly [entityKind]: string;
@@ -50,6 +51,7 @@ export type SQLiteTimestampBuilderInitial<TName extends string> = SQLiteTimestam
     data: Date;
     driverParam: number;
     enumValues: undefined;
+    generated: undefined;
 }>;
 export declare class SQLiteTimestampBuilder<T extends ColumnBuilderBaseConfig<'date', 'SQLiteTimestamp'>> extends SQLiteBaseIntegerBuilder<T, {
     mode: 'timestamp' | 'timestamp_ms';
@@ -81,6 +83,7 @@ export type SQLiteBooleanBuilderInitial<TName extends string> = SQLiteBooleanBui
     data: boolean;
     driverParam: number;
     enumValues: undefined;
+    generated: undefined;
 }>;
 export declare class SQLiteBooleanBuilder<T extends ColumnBuilderBaseConfig<'boolean', 'SQLiteBoolean'>> extends SQLiteBaseIntegerBuilder<T, {
     mode: 'boolean';
@@ -102,5 +105,7 @@ export declare class SQLiteBoolean<T extends ColumnBaseConfig<'boolean', 'SQLite
 export interface IntegerConfig<TMode extends 'number' | 'timestamp' | 'timestamp_ms' | 'boolean' = 'number' | 'timestamp' | 'timestamp_ms' | 'boolean'> {
     mode: TMode;
 }
+export declare function integer(): SQLiteIntegerBuilderInitial<''>;
+export declare function integer<TMode extends IntegerConfig['mode']>(config?: IntegerConfig<TMode>): Or<Equal<TMode, 'timestamp'>, Equal<TMode, 'timestamp_ms'>> extends true ? SQLiteTimestampBuilderInitial<''> : Equal<TMode, 'boolean'> extends true ? SQLiteBooleanBuilderInitial<''> : SQLiteIntegerBuilderInitial<''>;
 export declare function integer<TName extends string, TMode extends IntegerConfig['mode']>(name: TName, config?: IntegerConfig<TMode>): Or<Equal<TMode, 'timestamp'>, Equal<TMode, 'timestamp_ms'>> extends true ? SQLiteTimestampBuilderInitial<TName> : Equal<TMode, 'boolean'> extends true ? SQLiteBooleanBuilderInitial<TName> : SQLiteIntegerBuilderInitial<TName>;
 export declare const int: typeof integer;

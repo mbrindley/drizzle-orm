@@ -102,6 +102,7 @@ class SQL {
       paramStartIndex: _config.paramStartIndex || { value: 0 }
     });
     const {
+      casing,
       escapeName,
       escapeParam,
       prepareTyping,
@@ -144,10 +145,11 @@ class SQL {
         };
       }
       if ((0, import_entity.is)(chunk, import_column.Column)) {
+        const columnName = casing.getColumnCasing(chunk);
         if (_config.invokeSource === "indexes") {
-          return { sql: escapeName(chunk.name), params: [] };
+          return { sql: escapeName(columnName), params: [] };
         }
-        return { sql: escapeName(chunk.table[import_table.Table.Symbol.Name]) + "." + escapeName(chunk.name), params: [] };
+        return { sql: escapeName(chunk.table[import_table.Table.Symbol.Name]) + "." + escapeName(columnName), params: [] };
       }
       if ((0, import_entity.is)(chunk, View)) {
         const schemaName = chunk[import_view_common.ViewBaseConfig].schema;
@@ -158,6 +160,9 @@ class SQL {
         };
       }
       if ((0, import_entity.is)(chunk, Param)) {
+        if ((0, import_entity.is)(chunk.value, Placeholder)) {
+          return { sql: escapeParam(paramStartIndex.value++, chunk), params: [chunk], typings: ["none"] };
+        }
         const mappedValue = chunk.value === null ? null : chunk.encoder.mapToDriverValue(chunk.value);
         if ((0, import_entity.is)(mappedValue, SQL)) {
           return this.buildQueryFromSourceParams([mappedValue], config);
@@ -165,14 +170,14 @@ class SQL {
         if (inlineParams) {
           return { sql: this.mapInlineParam(mappedValue, config), params: [] };
         }
-        let typings;
-        if (prepareTyping !== void 0) {
+        let typings = ["none"];
+        if (prepareTyping) {
           typings = [prepareTyping(chunk.encoder)];
         }
         return { sql: escapeParam(paramStartIndex.value++, mappedValue), params: [mappedValue], typings };
       }
       if ((0, import_entity.is)(chunk, Placeholder)) {
-        return { sql: escapeParam(paramStartIndex.value++, chunk), params: [chunk] };
+        return { sql: escapeParam(paramStartIndex.value++, chunk), params: [chunk], typings: ["none"] };
       }
       if ((0, import_entity.is)(chunk, SQL.Aliased) && chunk.fieldAlias !== void 0) {
         return { sql: escapeName(chunk.fieldAlias), params: [] };
@@ -195,6 +200,9 @@ class SQL {
         return { sql: escapeName(chunk.enumName), params: [] };
       }
       if (isSQLWrapper(chunk)) {
+        if (chunk.shouldOmitSQLParens?.()) {
+          return this.buildQueryFromSourceParams([chunk.getSQL()], config);
+        }
         return this.buildQueryFromSourceParams([
           new StringChunk("("),
           chunk.getSQL(),
@@ -382,6 +390,12 @@ function fillPlaceholders(params, values) {
         throw new Error(`No value for placeholder "${p.name}" was provided`);
       }
       return values[p.name];
+    }
+    if ((0, import_entity.is)(p, Param) && (0, import_entity.is)(p.value, Placeholder)) {
+      if (!(p.value.name in values)) {
+        throw new Error(`No value for placeholder "${p.value.name}" was provided`);
+      }
+      return p.encoder.mapToDriverValue(values[p.value.name]);
     }
     return p;
   });

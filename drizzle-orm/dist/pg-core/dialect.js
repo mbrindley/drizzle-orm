@@ -1,4 +1,5 @@
 import { aliasedTable, aliasedTableColumn, mapColumnsInAliasedSQLToAlias, mapColumnsInSQLToAlias } from "../alias.js";
+import { CasingCache } from "../casing.js";
 import { Column } from "../column.js";
 import { entityKind, is } from "../entity.js";
 import { DrizzleError } from "../errors.js";
@@ -18,12 +19,17 @@ import {
   sql
 } from "../sql/sql.js";
 import { Subquery } from "../subquery.js";
-import { getTableName, Table } from "../table.js";
+import { getTableName, getTableUniqueName, Table } from "../table.js";
 import { orderSelectedFields } from "../utils.js";
 import { ViewBaseConfig } from "../view-common.js";
 import { PgViewBase } from "./view-base.js";
 class PgDialect {
   static [entityKind] = "PgDialect";
+  /** @internal */
+  casing;
+  constructor(config) {
+    this.casing = new CasingCache(config?.casing);
+  }
   async migrate(migrations, session, config) {
     const migrationsTable = typeof config === "string" ? "__drizzle_migrations" : config.migrationsTable ?? "__drizzle_migrations";
     const migrationsSchema = typeof config === "string" ? "drizzle" : config.migrationsSchema ?? "drizzle";
@@ -90,7 +96,7 @@ class PgDialect {
     return sql.join(columnNames.flatMap((colName, i) => {
       const col = tableColumns[colName];
       const value = set[colName] ?? sql.param(col.onUpdateFn(), col);
-      const res = sql`${sql.identifier(col.name)} = ${value}`;
+      const res = sql`${sql.identifier(this.casing.getColumnCasing(col))} = ${value}`;
       if (i < setSize - 1) {
         return [res, sql.raw(", ")];
       }
@@ -128,7 +134,7 @@ class PgDialect {
             new SQL(
               query.queryChunks.map((c) => {
                 if (is(c, PgColumn)) {
-                  return sql.identifier(c.name);
+                  return sql.identifier(this.casing.getColumnCasing(c));
                 }
                 return c;
               })
@@ -142,7 +148,7 @@ class PgDialect {
         }
       } else if (is(field, Column)) {
         if (isSingleTable) {
-          chunk.push(sql.identifier(field.name));
+          chunk.push(sql.identifier(this.casing.getColumnCasing(field)));
         } else {
           chunk.push(field);
         }
@@ -243,7 +249,7 @@ class PgDialect {
     if (groupBy && groupBy.length > 0) {
       groupBySql = sql` group by ${sql.join(groupBy, sql`, `)}`;
     }
-    const limitSql = limit ? sql` limit ${limit}` : void 0;
+    const limitSql = typeof limit === "object" || typeof limit === "number" && limit >= 0 ? sql` limit ${limit}` : void 0;
     const offsetSql = offset ? sql` offset ${offset}` : void 0;
     const lockingClauseSql = sql.empty();
     if (lockingClause) {
@@ -308,7 +314,7 @@ class PgDialect {
       }
       orderBySql = sql` order by ${sql.join(orderByValues, sql`, `)} `;
     }
-    const limitSql = limit ? sql` limit ${limit}` : void 0;
+    const limitSql = typeof limit === "object" || typeof limit === "number" && limit >= 0 ? sql` limit ${limit}` : void 0;
     const operatorChunk = sql.raw(`${type} ${isAll ? "all " : ""}`);
     const offsetSql = offset ? sql` offset ${offset}` : void 0;
     return sql`${leftChunk}${operatorChunk}${rightChunk}${orderBySql}${limitSql}${offsetSql}`;
@@ -316,8 +322,10 @@ class PgDialect {
   buildInsertQuery({ table, values, onConflict, returning, withList }) {
     const valuesSqlList = [];
     const columns = table[Table.Symbol.Columns];
-    const colEntries = Object.entries(columns);
-    const insertOrder = colEntries.map(([, column]) => sql.identifier(column.name));
+    const colEntries = Object.entries(columns).filter(([_, col]) => !col.shouldDisableInsert());
+    const insertOrder = colEntries.map(
+      ([, column]) => sql.identifier(this.casing.getColumnCasing(column))
+    );
     for (const [valueIndex, value] of values.entries()) {
       const valueList = [];
       for (const [fieldName, col] of colEntries) {
@@ -375,6 +383,7 @@ class PgDialect {
   }
   sqlToQuery(sql2, invokeSource) {
     return sql2.toQuery({
+      casing: this.casing,
       escapeName: this.escapeName,
       escapeParam: this.escapeParam,
       escapeString: this.escapeString,
@@ -962,7 +971,7 @@ class PgDialect {
         relation
       } of selectedRelations) {
         const normalizedRelation = normalizeRelation(schema, tableNamesMap, relation);
-        const relationTableName = relation.referencedTable[Table.Symbol.Name];
+        const relationTableName = getTableUniqueName(relation.referencedTable);
         const relationTableTsName = tableNamesMap[relationTableName];
         const relationTableAlias = `${tableAlias}_${selectedRelationTsKey}`;
         const joinOn2 = and(

@@ -1,4 +1,4 @@
-import type { ColumnBuilderBase, ColumnBuilderBaseConfig, ColumnBuilderExtraConfig, ColumnBuilderRuntimeConfig, ColumnDataType } from "../../column-builder.cjs";
+import type { ColumnBuilderBase, ColumnBuilderBaseConfig, ColumnBuilderExtraConfig, ColumnBuilderRuntimeConfig, ColumnDataType, GeneratedColumnConfig, HasGenerated } from "../../column-builder.cjs";
 import { ColumnBuilder } from "../../column-builder.cjs";
 import type { ColumnBaseConfig } from "../../column.cjs";
 import { Column } from "../../column.cjs";
@@ -6,6 +6,7 @@ import { entityKind } from "../../entity.cjs";
 import type { Update } from "../../utils.cjs";
 import type { UpdateDeleteAction } from "../foreign-keys.cjs";
 import type { AnyPgTable, PgTable } from "../table.cjs";
+import type { SQL } from "../../sql/sql.cjs";
 import type { PgIndexOpClass } from "../indexes.cjs";
 export interface ReferenceConfig {
     ref: () => PgColumn;
@@ -30,6 +31,7 @@ export declare abstract class PgColumnBuilder<T extends ColumnBuilderBaseConfig<
         data: T['data'][];
         driverParam: T['driverParam'][] | string;
         enumValues: T['enumValues'];
+        generated: GeneratedColumnConfig<T['data']>;
     } & (T extends {
         notNull: true;
     } ? {
@@ -43,6 +45,7 @@ export declare abstract class PgColumnBuilder<T extends ColumnBuilderBaseConfig<
     unique(name?: string, config?: {
         nulls: 'distinct' | 'not distinct';
     }): this;
+    generatedAlwaysAs(as: SQL | T['data'] | (() => SQL)): HasGenerated<this>;
 }
 export declare abstract class PgColumn<T extends ColumnBaseConfig<ColumnDataType, string> = ColumnBaseConfig<ColumnDataType, string>, TRuntimeConfig extends object = {}, TTypeConfig extends object = {}> extends Column<T, TRuntimeConfig, TTypeConfig & {
     dialect: 'pg';
@@ -98,8 +101,9 @@ export declare class ExtraConfigColumn<T extends ColumnBaseConfig<ColumnDataType
 }
 export declare class IndexedColumn {
     static readonly [entityKind]: string;
-    constructor(name: string | undefined, type: string, indexConfig: IndexedExtraConfigType);
+    constructor(name: string | undefined, keyAsName: boolean, type: string, indexConfig: IndexedExtraConfigType);
     name: string | undefined;
+    keyAsName: boolean;
     type: string;
     indexConfig: IndexedExtraConfigType;
 }

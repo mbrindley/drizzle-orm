@@ -3,7 +3,7 @@ import { entityKind } from "../entity.js";
 import { type Logger } from "../logger.js";
 import { type PgDialect, PgTransaction } from "../pg-core/index.js";
 import type { SelectedFieldsOrdered } from "../pg-core/query-builders/select.types.js";
-import type { PgTransactionConfig, PreparedQueryConfig, QueryResultHKT } from "../pg-core/session.js";
+import type { PgQueryResultHKT, PgTransactionConfig, PreparedQueryConfig } from "../pg-core/session.js";
 import { PgPreparedQuery, PgSession } from "../pg-core/session.js";
 import type { RelationalSchemaConfig, TablesRelationalConfig } from "../relations.js";
 import { type Query } from "../sql/sql.js";
@@ -19,7 +19,7 @@ export declare class VercelPgPreparedQuery<T extends PreparedQueryConfig> extend
     static readonly [entityKind]: string;
     private rawQuery;
     private queryConfig;
-    constructor(client: VercelPgClient, queryString: string, params: unknown[], logger: Logger, fields: SelectedFieldsOrdered | undefined, name: string | undefined, _isResponseInArrayMode: boolean, customResultMapper?: ((rows: unknown[][]) => T['execute']) | undefined);
+    constructor(client: VercelPgClient, queryString: string, params: unknown[], logger: Logger, fields: SelectedFieldsOrdered | undefined, name: string | undefined, _isResponseInArrayMode: boolean, customResultMapper?: ((rows: unknown[][]) => T["execute"]) | undefined);
     execute(placeholderValues?: Record<string, unknown> | undefined): Promise<T['execute']>;
     all(placeholderValues?: Record<string, unknown> | undefined): Promise<T['all']>;
     values(placeholderValues?: Record<string, unknown> | undefined): Promise<T['values']>;
@@ -43,6 +43,6 @@ export declare class VercelPgTransaction<TFullSchema extends Record<string, unkn
     static readonly [entityKind]: string;
     transaction<T>(transaction: (tx: VercelPgTransaction<TFullSchema, TSchema>) => Promise<T>): Promise<T>;
 }
-export interface VercelPgQueryResultHKT extends QueryResultHKT {
+export interface VercelPgQueryResultHKT extends PgQueryResultHKT {
     type: QueryResult<Assume<this['row'], QueryResultRow>>;
 }

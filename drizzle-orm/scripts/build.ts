@@ -63,6 +63,7 @@ await Promise.all([
 	})(),
 ]);
 
+console.log('Building version');
 await Promise.all([
 	$`tsup src/version.ts --no-config --dts --format esm --outDir dist.new`.stdio('pipe', 'pipe', 'pipe'),
 	$`tsup src/version.ts --no-config --dts --format cjs --outDir dist.new`.stdio('pipe', 'pipe', 'pipe'),

@@ -22,6 +22,7 @@ __export(dialect_exports, {
 });
 module.exports = __toCommonJS(dialect_exports);
 var import_alias = require("../alias.cjs");
+var import_casing = require("../casing.cjs");
 var import_column = require("../column.cjs");
 var import_entity = require("../entity.cjs");
 var import_errors = require("../errors.cjs");
@@ -37,6 +38,11 @@ var import_view_common = require("../view-common.cjs");
 var import_view_base = require("./view-base.cjs");
 class PgDialect {
   static [import_entity.entityKind] = "PgDialect";
+  /** @internal */
+  casing;
+  constructor(config) {
+    this.casing = new import_casing.CasingCache(config?.casing);
+  }
   async migrate(migrations, session, config) {
     const migrationsTable = typeof config === "string" ? "__drizzle_migrations" : config.migrationsTable ?? "__drizzle_migrations";
     const migrationsSchema = typeof config === "string" ? "drizzle" : config.migrationsSchema ?? "drizzle";
@@ -103,7 +109,7 @@ class PgDialect {
     return import_sql2.sql.join(columnNames.flatMap((colName, i) => {
       const col = tableColumns[colName];
       const value = set[colName] ?? import_sql2.sql.param(col.onUpdateFn(), col);
-      const res = import_sql2.sql`${import_sql2.sql.identifier(col.name)} = ${value}`;
+      const res = import_sql2.sql`${import_sql2.sql.identifier(this.casing.getColumnCasing(col))} = ${value}`;
       if (i < setSize - 1) {
         return [res, import_sql2.sql.raw(", ")];
       }
@@ -141,7 +147,7 @@ class PgDialect {
             new import_sql2.SQL(
               query.queryChunks.map((c) => {
                 if ((0, import_entity.is)(c, import_columns.PgColumn)) {
-                  return import_sql2.sql.identifier(c.name);
+                  return import_sql2.sql.identifier(this.casing.getColumnCasing(c));
                 }
                 return c;
               })
@@ -155,7 +161,7 @@ class PgDialect {
         }
       } else if ((0, import_entity.is)(field, import_column.Column)) {
         if (isSingleTable) {
-          chunk.push(import_sql2.sql.identifier(field.name));
+          chunk.push(import_sql2.sql.identifier(this.casing.getColumnCasing(field)));
         } else {
           chunk.push(field);
         }
@@ -256,7 +262,7 @@ class PgDialect {
     if (groupBy && groupBy.length > 0) {
       groupBySql = import_sql2.sql` group by ${import_sql2.sql.join(groupBy, import_sql2.sql`, `)}`;
     }
-    const limitSql = limit ? import_sql2.sql` limit ${limit}` : void 0;
+    const limitSql = typeof limit === "object" || typeof limit === "number" && limit >= 0 ? import_sql2.sql` limit ${limit}` : void 0;
     const offsetSql = offset ? import_sql2.sql` offset ${offset}` : void 0;
     const lockingClauseSql = import_sql2.sql.empty();
     if (lockingClause) {
@@ -321,7 +327,7 @@ class PgDialect {
       }
       orderBySql = import_sql2.sql` order by ${import_sql2.sql.join(orderByValues, import_sql2.sql`, `)} `;
     }
-    const limitSql = limit ? import_sql2.sql` limit ${limit}` : void 0;
+    const limitSql = typeof limit === "object" || typeof limit === "number" && limit >= 0 ? import_sql2.sql` limit ${limit}` : void 0;
     const operatorChunk = import_sql2.sql.raw(`${type} ${isAll ? "all " : ""}`);
     const offsetSql = offset ? import_sql2.sql` offset ${offset}` : void 0;
     return import_sql2.sql`${leftChunk}${operatorChunk}${rightChunk}${orderBySql}${limitSql}${offsetSql}`;
@@ -329,8 +335,10 @@ class PgDialect {
   buildInsertQuery({ table, values, onConflict, returning, withList }) {
     const valuesSqlList = [];
     const columns = table[import_table2.Table.Symbol.Columns];
-    const colEntries = Object.entries(columns);
-    const insertOrder = colEntries.map(([, column]) => import_sql2.sql.identifier(column.name));
+    const colEntries = Object.entries(columns).filter(([_, col]) => !col.shouldDisableInsert());
+    const insertOrder = colEntries.map(
+      ([, column]) => import_sql2.sql.identifier(this.casing.getColumnCasing(column))
+    );
     for (const [valueIndex, value] of values.entries()) {
       const valueList = [];
       for (const [fieldName, col] of colEntries) {
@@ -388,6 +396,7 @@ class PgDialect {
   }
   sqlToQuery(sql2, invokeSource) {
     return sql2.toQuery({
+      casing: this.casing,
       escapeName: this.escapeName,
       escapeParam: this.escapeParam,
       escapeString: this.escapeString,
@@ -975,7 +984,7 @@ class PgDialect {
         relation
       } of selectedRelations) {
         const normalizedRelation = (0, import_relations.normalizeRelation)(schema, tableNamesMap, relation);
-        const relationTableName = relation.referencedTable[import_table2.Table.Symbol.Name];
+        const relationTableName = (0, import_table2.getTableUniqueName)(relation.referencedTable);
         const relationTableTsName = tableNamesMap[relationTableName];
         const relationTableAlias = `${tableAlias}_${selectedRelationTsKey}`;
         const joinOn2 = (0, import_sql.and)(

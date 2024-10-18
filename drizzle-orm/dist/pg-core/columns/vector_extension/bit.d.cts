@@ -9,6 +9,7 @@ export type PgBinaryVectorBuilderInitial<TName extends string> = PgBinaryVectorB
     data: string;
     driverParam: string;
     enumValues: undefined;
+    generated: undefined;
 }>;
 export declare class PgBinaryVectorBuilder<T extends ColumnBuilderBaseConfig<'string', 'PgBinaryVector'>> extends PgColumnBuilder<T, {
     dimensions: number | undefined;
@@ -26,4 +27,5 @@ export declare class PgBinaryVector<T extends ColumnBaseConfig<'string', 'PgBina
 export interface PgBinaryVectorConfig {
     dimensions: number;
 }
+export declare function bit(config: PgBinaryVectorConfig): PgBinaryVectorBuilderInitial<''>;
 export declare function bit<TName extends string>(name: TName, config: PgBinaryVectorConfig): PgBinaryVectorBuilderInitial<TName>;
