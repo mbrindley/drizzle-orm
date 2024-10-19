@@ -66137,6 +66137,7 @@ var init_studio2 = __esm({
         import_drizzle_orm8.createTableRelationsHelpers
       );
       app.post("/", zValidator("json", schema4), async (c) => {
+        var _a, _b;
         const body = c.req.valid("json");
         const { type } = body;
         if (type === "init") {
@@ -66156,6 +66157,9 @@ var init_studio2 = __esm({
           });
         }
         if (type === "proxy") {
+          if ((((_b = (_a = body.data) == null ? void 0 : _a.typings) == null ? void 0 : _b.length) || 0) > 0) {
+            body.data.typings[body.data.typings.length - 1] = "uuid";
+          }
           const result = await proxy({
             ...body.data,
             params: body.data.params || []
