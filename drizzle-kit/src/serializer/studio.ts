@@ -552,6 +552,9 @@ export const prepareServer = async (
 		}
 
 		if (type === 'proxy') {
+			if ((body.data?.typings?.length || 0) > 0) {
+				body.data.typings[body.data.typings.length - 1] = 'uuid';
+			}
 			const result = await proxy({
 				...body.data,
 				params: body.data.params || [],
