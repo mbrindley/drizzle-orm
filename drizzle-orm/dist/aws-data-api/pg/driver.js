@@ -1,4 +1,3 @@
-import { RDSDataClient } from "@aws-sdk/client-rds-data";
 import { entityKind, is } from "../../entity.js";
 import { DefaultLogger } from "../../logger.js";
 import { PgDatabase } from "../../pg-core/db.js";
@@ -70,18 +69,30 @@ function construct(client, config) {
   db.$client = client;
   return db;
 }
-function drizzle(...params) {
-  if (params[0] instanceof RDSDataClient) {
-    return construct(params[0], params[1]);
+function drizzle(client, config) {
+  const dialect = new AwsPgDialect({ casing: config.casing });
+  let logger;
+  if (config.logger === true) {
+    logger = new DefaultLogger();
+  } else if (config.logger !== false) {
+    logger = config.logger;
   }
-  if (params[0].client) {
-    const { client, ...drizzleConfig2 } = params[0];
-    return construct(client, drizzleConfig2);
+  let schema;
+  if (config.schema) {
+    const tablesConfig = extractTablesRelationalConfig(
+      config.schema,
+      createTableRelationsHelpers
+    );
+    schema = {
+      fullSchema: config.schema,
+      schema: tablesConfig.tables,
+      tableNamesMap: tablesConfig.tableNamesMap
+    };
   }
-  const { connection, ...drizzleConfig } = params[0];
-  const { resourceArn, database, secretArn, ...rdsConfig } = connection;
-  const instance = new RDSDataClient(rdsConfig);
-  return construct(instance, { resourceArn, database, secretArn, ...drizzleConfig });
+  const session = new AwsDataApiSession(client, dialect, schema, { ...config, logger }, void 0);
+  const db = new AwsDataApiPgDatabase(dialect, session, schema);
+  db.$client = client;
+  return db;
 }
 ((drizzle2) => {
   function mock(config) {

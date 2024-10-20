@@ -510,54 +510,6 @@
       "types": "./view-common.d.ts",
       "default": "./view-common.js"
     },
-    "./bun-sqlite/driver": {
-      "import": {
-        "types": "./bun-sqlite/driver.d.ts",
-        "default": "./bun-sqlite/driver.js"
-      },
-      "require": {
-        "types": "./bun-sqlite/driver.d.cts",
-        "default": "./bun-sqlite/driver.cjs"
-      },
-      "types": "./bun-sqlite/driver.d.ts",
-      "default": "./bun-sqlite/driver.js"
-    },
-    "./bun-sqlite": {
-      "import": {
-        "types": "./bun-sqlite/index.d.ts",
-        "default": "./bun-sqlite/index.js"
-      },
-      "require": {
-        "types": "./bun-sqlite/index.d.cts",
-        "default": "./bun-sqlite/index.cjs"
-      },
-      "types": "./bun-sqlite/index.d.ts",
-      "default": "./bun-sqlite/index.js"
-    },
-    "./bun-sqlite/migrator": {
-      "import": {
-        "types": "./bun-sqlite/migrator.d.ts",
-        "default": "./bun-sqlite/migrator.js"
-      },
-      "require": {
-        "types": "./bun-sqlite/migrator.d.cts",
-        "default": "./bun-sqlite/migrator.cjs"
-      },
-      "types": "./bun-sqlite/migrator.d.ts",
-      "default": "./bun-sqlite/migrator.js"
-    },
-    "./bun-sqlite/session": {
-      "import": {
-        "types": "./bun-sqlite/session.d.ts",
-        "default": "./bun-sqlite/session.js"
-      },
-      "require": {
-        "types": "./bun-sqlite/session.d.cts",
-        "default": "./bun-sqlite/session.cjs"
-      },
-      "types": "./bun-sqlite/session.d.ts",
-      "default": "./bun-sqlite/session.js"
-    },
     "./better-sqlite3/driver": {
       "import": {
         "types": "./better-sqlite3/driver.d.ts",
@@ -605,6 +557,54 @@
       },
       "types": "./better-sqlite3/session.d.ts",
       "default": "./better-sqlite3/session.js"
+    },
+    "./bun-sqlite/driver": {
+      "import": {
+        "types": "./bun-sqlite/driver.d.ts",
+        "default": "./bun-sqlite/driver.js"
+      },
+      "require": {
+        "types": "./bun-sqlite/driver.d.cts",
+        "default": "./bun-sqlite/driver.cjs"
+      },
+      "types": "./bun-sqlite/driver.d.ts",
+      "default": "./bun-sqlite/driver.js"
+    },
+    "./bun-sqlite": {
+      "import": {
+        "types": "./bun-sqlite/index.d.ts",
+        "default": "./bun-sqlite/index.js"
+      },
+      "require": {
+        "types": "./bun-sqlite/index.d.cts",
+        "default": "./bun-sqlite/index.cjs"
+      },
+      "types": "./bun-sqlite/index.d.ts",
+      "default": "./bun-sqlite/index.js"
+    },
+    "./bun-sqlite/migrator": {
+      "import": {
+        "types": "./bun-sqlite/migrator.d.ts",
+        "default": "./bun-sqlite/migrator.js"
+      },
+      "require": {
+        "types": "./bun-sqlite/migrator.d.cts",
+        "default": "./bun-sqlite/migrator.cjs"
+      },
+      "types": "./bun-sqlite/migrator.d.ts",
+      "default": "./bun-sqlite/migrator.js"
+    },
+    "./bun-sqlite/session": {
+      "import": {
+        "types": "./bun-sqlite/session.d.ts",
+        "default": "./bun-sqlite/session.js"
+      },
+      "require": {
+        "types": "./bun-sqlite/session.d.cts",
+        "default": "./bun-sqlite/session.cjs"
+      },
+      "types": "./bun-sqlite/session.d.ts",
+      "default": "./bun-sqlite/session.js"
     },
     "./d1/driver": {
       "import": {
@@ -1290,54 +1290,6 @@
       "types": "./op-sqlite/session.d.ts",
       "default": "./op-sqlite/session.js"
     },
-    "./pg-proxy/driver": {
-      "import": {
-        "types": "./pg-proxy/driver.d.ts",
-        "default": "./pg-proxy/driver.js"
-      },
-      "require": {
-        "types": "./pg-proxy/driver.d.cts",
-        "default": "./pg-proxy/driver.cjs"
-      },
-      "types": "./pg-proxy/driver.d.ts",
-      "default": "./pg-proxy/driver.js"
-    },
-    "./pg-proxy": {
-      "import": {
-        "types": "./pg-proxy/index.d.ts",
-        "default": "./pg-proxy/index.js"
-      },
-      "require": {
-        "types": "./pg-proxy/index.d.cts",
-        "default": "./pg-proxy/index.cjs"
-      },
-      "types": "./pg-proxy/index.d.ts",
-      "default": "./pg-proxy/index.js"
-    },
-    "./pg-proxy/migrator": {
-      "import": {
-        "types": "./pg-proxy/migrator.d.ts",
-        "default": "./pg-proxy/migrator.js"
-      },
-      "require": {
-        "types": "./pg-proxy/migrator.d.cts",
-        "default": "./pg-proxy/migrator.cjs"
-      },
-      "types": "./pg-proxy/migrator.d.ts",
-      "default": "./pg-proxy/migrator.js"
-    },
-    "./pg-proxy/session": {
-      "import": {
-        "types": "./pg-proxy/session.d.ts",
-        "default": "./pg-proxy/session.js"
-      },
-      "require": {
-        "types": "./pg-proxy/session.d.cts",
-        "default": "./pg-proxy/session.cjs"
-      },
-      "types": "./pg-proxy/session.d.ts",
-      "default": "./pg-proxy/session.js"
-    },
     "./pg-core/alias": {
       "import": {
         "types": "./pg-core/alias.d.ts",
@@ -1565,6 +1517,54 @@
       },
       "types": "./pg-core/view.d.ts",
       "default": "./pg-core/view.js"
+    },
+    "./pg-proxy/driver": {
+      "import": {
+        "types": "./pg-proxy/driver.d.ts",
+        "default": "./pg-proxy/driver.js"
+      },
+      "require": {
+        "types": "./pg-proxy/driver.d.cts",
+        "default": "./pg-proxy/driver.cjs"
+      },
+      "types": "./pg-proxy/driver.d.ts",
+      "default": "./pg-proxy/driver.js"
+    },
+    "./pg-proxy": {
+      "import": {
+        "types": "./pg-proxy/index.d.ts",
+        "default": "./pg-proxy/index.js"
+      },
+      "require": {
+        "types": "./pg-proxy/index.d.cts",
+        "default": "./pg-proxy/index.cjs"
+      },
+      "types": "./pg-proxy/index.d.ts",
+      "default": "./pg-proxy/index.js"
+    },
+    "./pg-proxy/migrator": {
+      "import": {
+        "types": "./pg-proxy/migrator.d.ts",
+        "default": "./pg-proxy/migrator.js"
+      },
+      "require": {
+        "types": "./pg-proxy/migrator.d.cts",
+        "default": "./pg-proxy/migrator.cjs"
+      },
+      "types": "./pg-proxy/migrator.d.ts",
+      "default": "./pg-proxy/migrator.js"
+    },
+    "./pg-proxy/session": {
+      "import": {
+        "types": "./pg-proxy/session.d.ts",
+        "default": "./pg-proxy/session.js"
+      },
+      "require": {
+        "types": "./pg-proxy/session.d.cts",
+        "default": "./pg-proxy/session.cjs"
+      },
+      "types": "./pg-proxy/session.d.ts",
+      "default": "./pg-proxy/session.js"
     },
     "./pglite/driver": {
       "import": {
@@ -3102,6 +3102,18 @@
       "types": "./pg-core/columns/varchar.d.ts",
       "default": "./pg-core/columns/varchar.js"
     },
+    "./pg-core/utils/array": {
+      "import": {
+        "types": "./pg-core/utils/array.d.ts",
+        "default": "./pg-core/utils/array.js"
+      },
+      "require": {
+        "types": "./pg-core/utils/array.d.cts",
+        "default": "./pg-core/utils/array.cjs"
+      },
+      "types": "./pg-core/utils/array.d.ts",
+      "default": "./pg-core/utils/array.js"
+    },
     "./pg-core/query-builders/count": {
       "import": {
         "types": "./pg-core/query-builders/count.d.ts",
@@ -3234,18 +3246,6 @@
       "types": "./pg-core/query-builders/update.d.ts",
       "default": "./pg-core/query-builders/update.js"
     },
-    "./pg-core/utils/array": {
-      "import": {
-        "types": "./pg-core/utils/array.d.ts",
-        "default": "./pg-core/utils/array.js"
-      },
-      "require": {
-        "types": "./pg-core/utils/array.d.cts",
-        "default": "./pg-core/utils/array.cjs"
-      },
-      "types": "./pg-core/utils/array.d.ts",
-      "default": "./pg-core/utils/array.js"
-    },
     "./prisma/mysql/driver": {
       "import": {
         "types": "./prisma/mysql/driver.d.ts",
@@ -3282,42 +3282,6 @@
       "types": "./prisma/mysql/session.d.ts",
       "default": "./prisma/mysql/session.js"
     },
-    "./prisma/pg/driver": {
-      "import": {
-        "types": "./prisma/pg/driver.d.ts",
-        "default": "./prisma/pg/driver.js"
-      },
-      "require": {
-        "types": "./prisma/pg/driver.d.cts",
-        "default": "./prisma/pg/driver.cjs"
-      },
-      "types": "./prisma/pg/driver.d.ts",
-      "default": "./prisma/pg/driver.js"
-    },
-    "./prisma/pg": {
-      "import": {
-        "types": "./prisma/pg/index.d.ts",
-        "default": "./prisma/pg/index.js"
-      },
-      "require": {
-        "types": "./prisma/pg/index.d.cts",
-        "default": "./prisma/pg/index.cjs"
-      },
-      "types": "./prisma/pg/index.d.ts",
-      "default": "./prisma/pg/index.js"
-    },
-    "./prisma/pg/session": {
-      "import": {
-        "types": "./prisma/pg/session.d.ts",
-        "default": "./prisma/pg/session.js"
-      },
-      "require": {
-        "types": "./prisma/pg/session.d.cts",
-        "default": "./prisma/pg/session.cjs"
-      },
-      "types": "./prisma/pg/session.d.ts",
-      "default": "./prisma/pg/session.js"
-    },
     "./prisma/sqlite/driver": {
       "import": {
         "types": "./prisma/sqlite/driver.d.ts",
@@ -3353,6 +3317,42 @@
       },
       "types": "./prisma/sqlite/session.d.ts",
       "default": "./prisma/sqlite/session.js"
+    },
+    "./prisma/pg/driver": {
+      "import": {
+        "types": "./prisma/pg/driver.d.ts",
+        "default": "./prisma/pg/driver.js"
+      },
+      "require": {
+        "types": "./prisma/pg/driver.d.cts",
+        "default": "./prisma/pg/driver.cjs"
+      },
+      "types": "./prisma/pg/driver.d.ts",
+      "default": "./prisma/pg/driver.js"
+    },
+    "./prisma/pg": {
+      "import": {
+        "types": "./prisma/pg/index.d.ts",
+        "default": "./prisma/pg/index.js"
+      },
+      "require": {
+        "types": "./prisma/pg/index.d.cts",
+        "default": "./prisma/pg/index.cjs"
+      },
+      "types": "./prisma/pg/index.d.ts",
+      "default": "./prisma/pg/index.js"
+    },
+    "./prisma/pg/session": {
+      "import": {
+        "types": "./prisma/pg/session.d.ts",
+        "default": "./prisma/pg/session.js"
+      },
+      "require": {
+        "types": "./prisma/pg/session.d.cts",
+        "default": "./prisma/pg/session.cjs"
+      },
+      "types": "./prisma/pg/session.d.ts",
+      "default": "./prisma/pg/session.js"
     },
     "./sql/expressions/conditions": {
       "import": {

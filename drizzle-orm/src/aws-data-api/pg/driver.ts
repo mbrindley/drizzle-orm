@@ -122,56 +122,38 @@ function construct<TSchema extends Record<string, unknown> = Record<string, neve
 	return db as any;
 }
 
-export function drizzle<
-	TSchema extends Record<string, unknown> = Record<string, never>,
-	TClient extends AwsDataApiClient = RDSDataClient,
->(
-	...params: IfNotImported<
-		RDSDataClientConfig,
-		[ImportTypeError<'@aws-sdk/client-rds-data'>],
-		[
-			TClient,
-			DrizzleAwsDataApiPgConfig<TSchema>,
-		] | [
-			(
-				| (
-					& DrizzleConfig<TSchema>
-					& {
-						connection: RDSDataClientConfig & Omit<DrizzleAwsDataApiPgConfig, keyof DrizzleConfig>;
-					}
-				)
-				| (
-					& DrizzleAwsDataApiPgConfig<TSchema>
-					& {
-						client: TClient;
-					}
-				)
-			),
-		]
-	>
+export function drizzle<TSchema extends Record<string, unknown> = Record<string, never>>(
+	client: AwsDataApiClient,
+	config: DrizzleAwsDataApiPgConfig<TSchema>,
 ): AwsDataApiPgDatabase<TSchema> & {
-	$client: TClient;
+	$client: AwsDataApiClient;
 } {
-	// eslint-disable-next-line no-instanceof/no-instanceof
-	if (params[0] instanceof RDSDataClient) {
-		return construct(params[0] as TClient, params[1] as DrizzleAwsDataApiPgConfig<TSchema>) as any;
+	const dialect = new AwsPgDialect({ casing: config.casing });
+	let logger;
+	if (config.logger === true) {
+		logger = new DefaultLogger();
+	} else if (config.logger !== false) {
+		logger = config.logger;
 	}
 
-	if ((params[0] as { client?: TClient }).client) {
-		const { client, ...drizzleConfig } = params[0] as {
-			client: TClient;
-		} & DrizzleAwsDataApiPgConfig<TSchema>;
-
-		return construct(client, drizzleConfig) as any;
+	let schema: RelationalSchemaConfig<TablesRelationalConfig> | undefined;
+	if (config.schema) {
+		const tablesConfig = extractTablesRelationalConfig(
+			config.schema,
+			createTableRelationsHelpers,
+		);
+		schema = {
+			fullSchema: config.schema,
+			schema: tablesConfig.tables,
+			tableNamesMap: tablesConfig.tableNamesMap,
+		};
 	}
 
-	const { connection, ...drizzleConfig } = params[0] as {
-		connection: RDSDataClientConfig & Omit<DrizzleAwsDataApiPgConfig, keyof DrizzleConfig>;
-	} & DrizzleConfig<TSchema>;
-	const { resourceArn, database, secretArn, ...rdsConfig } = connection;
+	const session = new AwsDataApiSession(client, dialect, schema, { ...config, logger }, undefined);
+	const db = new AwsDataApiPgDatabase(dialect, session, schema as any);
+	(<any> db).$client = client;
 
-	const instance = new RDSDataClient(rdsConfig);
-	return construct(instance, { resourceArn, database, secretArn, ...drizzleConfig }) as any;
+	return db as any;
 }
 
 export namespace drizzle {

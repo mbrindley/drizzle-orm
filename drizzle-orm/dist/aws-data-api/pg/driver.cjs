@@ -23,7 +23,6 @@ __export(driver_exports, {
   drizzle: () => drizzle
 });
 module.exports = __toCommonJS(driver_exports);
-var import_client_rds_data = require("@aws-sdk/client-rds-data");
 var import_entity = require("../../entity.cjs");
 var import_logger = require("../../logger.cjs");
 var import_db = require("../../pg-core/db.cjs");
@@ -92,18 +91,30 @@ function construct(client, config) {
   db.$client = client;
   return db;
 }
-function drizzle(...params) {
-  if (params[0] instanceof import_client_rds_data.RDSDataClient) {
-    return construct(params[0], params[1]);
+function drizzle(client, config) {
+  const dialect = new AwsPgDialect({ casing: config.casing });
+  let logger;
+  if (config.logger === true) {
+    logger = new import_logger.DefaultLogger();
+  } else if (config.logger !== false) {
+    logger = config.logger;
   }
-  if (params[0].client) {
-    const { client, ...drizzleConfig2 } = params[0];
-    return construct(client, drizzleConfig2);
+  let schema;
+  if (config.schema) {
+    const tablesConfig = (0, import_relations.extractTablesRelationalConfig)(
+      config.schema,
+      import_relations.createTableRelationsHelpers
+    );
+    schema = {
+      fullSchema: config.schema,
+      schema: tablesConfig.tables,
+      tableNamesMap: tablesConfig.tableNamesMap
+    };
   }
-  const { connection, ...drizzleConfig } = params[0];
-  const { resourceArn, database, secretArn, ...rdsConfig } = connection;
-  const instance = new import_client_rds_data.RDSDataClient(rdsConfig);
-  return construct(instance, { resourceArn, database, secretArn, ...drizzleConfig });
+  const session = new import_session.AwsDataApiSession(client, dialect, schema, { ...config, logger }, void 0);
+  const db = new AwsDataApiPgDatabase(dialect, session, schema);
+  db.$client = client;
+  return db;
 }
 ((drizzle2) => {
   function mock(config) {

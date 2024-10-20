@@ -1,4 +1,3 @@
-import { RDSDataClient, type RDSDataClientConfig } from '@aws-sdk/client-rds-data';
 import { entityKind } from "../../entity.js";
 import type { Logger } from "../../logger.js";
 import { PgDatabase } from "../../pg-core/db.js";
@@ -6,7 +5,7 @@ import { PgDialect } from "../../pg-core/dialect.js";
 import type { PgInsertConfig, PgTable, TableConfig } from "../../pg-core/index.js";
 import type { PgRaw } from "../../pg-core/query-builders/raw.js";
 import { type SQL, type SQLWrapper } from "../../sql/sql.js";
-import type { DrizzleConfig, IfNotImported, ImportTypeError, UpdateSet } from "../../utils.js";
+import type { DrizzleConfig, UpdateSet } from "../../utils.js";
 import type { AwsDataApiClient, AwsDataApiPgQueryResult, AwsDataApiPgQueryResultHKT } from "./session.js";
 export interface PgDriverOptions {
     logger?: Logger;
@@ -29,19 +28,8 @@ export declare class AwsPgDialect extends PgDialect {
     buildInsertQuery({ table, values, onConflict, returning }: PgInsertConfig<PgTable<TableConfig>>): SQL<unknown>;
     buildUpdateSet(table: PgTable<TableConfig>, set: UpdateSet): SQL<unknown>;
 }
-export declare function drizzle<TSchema extends Record<string, unknown> = Record<string, never>, TClient extends AwsDataApiClient = RDSDataClient>(...params: IfNotImported<RDSDataClientConfig, [
-    ImportTypeError<'@aws-sdk/client-rds-data'>
-], [
-    TClient,
-    DrizzleAwsDataApiPgConfig<TSchema>
-] | [
-    ((DrizzleConfig<TSchema> & {
-        connection: RDSDataClientConfig & Omit<DrizzleAwsDataApiPgConfig, keyof DrizzleConfig>;
-    }) | (DrizzleAwsDataApiPgConfig<TSchema> & {
-        client: TClient;
-    }))
-]>): AwsDataApiPgDatabase<TSchema> & {
-    $client: TClient;
+export declare function drizzle<TSchema extends Record<string, unknown> = Record<string, never>>(client: AwsDataApiClient, config: DrizzleAwsDataApiPgConfig<TSchema>): AwsDataApiPgDatabase<TSchema> & {
+    $client: AwsDataApiClient;
 };
 export declare namespace drizzle {
     function mock<TSchema extends Record<string, unknown> = Record<string, never>>(config: DrizzleAwsDataApiPgConfig<TSchema>): AwsDataApiPgDatabase<TSchema> & {
