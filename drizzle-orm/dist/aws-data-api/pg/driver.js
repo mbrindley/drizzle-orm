@@ -70,29 +70,7 @@ function construct(client, config) {
   return db;
 }
 function drizzle(client, config) {
-  const dialect = new AwsPgDialect({ casing: config.casing });
-  let logger;
-  if (config.logger === true) {
-    logger = new DefaultLogger();
-  } else if (config.logger !== false) {
-    logger = config.logger;
-  }
-  let schema;
-  if (config.schema) {
-    const tablesConfig = extractTablesRelationalConfig(
-      config.schema,
-      createTableRelationsHelpers
-    );
-    schema = {
-      fullSchema: config.schema,
-      schema: tablesConfig.tables,
-      tableNamesMap: tablesConfig.tableNamesMap
-    };
-  }
-  const session = new AwsDataApiSession(client, dialect, schema, { ...config, logger }, void 0);
-  const db = new AwsDataApiPgDatabase(dialect, session, schema);
-  db.$client = client;
-  return db;
+  return construct(client, config);
 }
 ((drizzle2) => {
   function mock(config) {

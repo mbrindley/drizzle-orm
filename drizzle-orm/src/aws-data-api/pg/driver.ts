@@ -128,32 +128,7 @@ export function drizzle<TSchema extends Record<string, unknown> = Record<string,
 ): AwsDataApiPgDatabase<TSchema> & {
 	$client: AwsDataApiClient;
 } {
-	const dialect = new AwsPgDialect({ casing: config.casing });
-	let logger;
-	if (config.logger === true) {
-		logger = new DefaultLogger();
-	} else if (config.logger !== false) {
-		logger = config.logger;
-	}
-
-	let schema: RelationalSchemaConfig<TablesRelationalConfig> | undefined;
-	if (config.schema) {
-		const tablesConfig = extractTablesRelationalConfig(
-			config.schema,
-			createTableRelationsHelpers,
-		);
-		schema = {
-			fullSchema: config.schema,
-			schema: tablesConfig.tables,
-			tableNamesMap: tablesConfig.tableNamesMap,
-		};
-	}
-
-	const session = new AwsDataApiSession(client, dialect, schema, { ...config, logger }, undefined);
-	const db = new AwsDataApiPgDatabase(dialect, session, schema as any);
-	(<any> db).$client = client;
-
-	return db as any;
+	return construct(client, config);
 }
 
 export namespace drizzle {

@@ -92,29 +92,7 @@ function construct(client, config) {
   return db;
 }
 function drizzle(client, config) {
-  const dialect = new AwsPgDialect({ casing: config.casing });
-  let logger;
-  if (config.logger === true) {
-    logger = new import_logger.DefaultLogger();
-  } else if (config.logger !== false) {
-    logger = config.logger;
-  }
-  let schema;
-  if (config.schema) {
-    const tablesConfig = (0, import_relations.extractTablesRelationalConfig)(
-      config.schema,
-      import_relations.createTableRelationsHelpers
-    );
-    schema = {
-      fullSchema: config.schema,
-      schema: tablesConfig.tables,
-      tableNamesMap: tablesConfig.tableNamesMap
-    };
-  }
-  const session = new import_session.AwsDataApiSession(client, dialect, schema, { ...config, logger }, void 0);
-  const db = new AwsDataApiPgDatabase(dialect, session, schema);
-  db.$client = client;
-  return db;
+  return construct(client, config);
 }
 ((drizzle2) => {
   function mock(config) {
